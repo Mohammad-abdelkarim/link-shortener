@@ -5,10 +5,3 @@ services:
     plan: free
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn app:app
-    disk:
-      name: data
-      mountPath: /var/data
-      sizeGB: 1
-    envVars:
-      - key: DB_PATH
-        value: /var/data/links.db
