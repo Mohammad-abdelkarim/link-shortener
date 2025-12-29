@@ -10,7 +10,6 @@ app = Flask(__name__)
 DB_PATH = "links.db"
 
 def init_db():
-    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
     with sqlite3.connect(DB_PATH) as con:
         cur = con.cursor()
         cur.execute("""
@@ -22,6 +21,7 @@ def init_db():
             )
         """)
         con.commit()
+
 
 def is_valid_url(url):
     p = urlparse(url.strip())
@@ -78,4 +78,5 @@ def redirect_link(code):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
 
