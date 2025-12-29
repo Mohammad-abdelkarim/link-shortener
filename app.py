@@ -7,7 +7,7 @@ import os
 
 app = Flask(__name__)
 
-DB_PATH = os.environ.get("DB_PATH", "/var/data/links.db")
+DB_PATH = "links.db"
 
 def init_db():
     os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
@@ -78,3 +78,4 @@ def redirect_link(code):
 
 if __name__ == "__main__":
     app.run(debug=True)
+
