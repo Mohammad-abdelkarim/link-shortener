@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Link Shortener</title>
+
+  <style>
+    :root{
+      --bg: #0b1220;
+      --card: rgba(255,255,255,0.06);
+      --border: rgba(255,255,255,0.10);
+      --text: #eaf0ff;
+      --muted: rgba(234,240,255,0.7);
+      --accent: #6ea8fe;
+      --accent2: #8b5cf6;
+      --ok: #22c55e;
+      --danger: #ef4444;
+      --shadow: 0 18px 60px rgba(0,0,0,0.35);
+      --radius: 18px;
+    }
+
+    *{ box-sizing: border-box; }
+    body{
+      margin: 0;
+      min-height: 100vh;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      color: var(--text);
+      background:
+        radial-gradient(900px 500px at 20% 10%, rgba(110,168,254,0.25), transparent 55%),
+        radial-gradient(900px 500px at 80% 20%, rgba(139,92,246,0.22), transparent 55%),
+        radial-gradient(900px 500px at 50% 90%, rgba(34,197,94,0.12), transparent 55%),
+        var(--bg);
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .wrap{
+      width: 100%;
+      max-width: 760px;
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      backdrop-filter: blur(14px);
+      padding: 22px;
+    }
+
+    .header{
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .logo{
+      width: 44px;
+      height: 44px;
+      border-radius: 14px;
+      display: grid;
+      place-items: center;
+      background: linear-gradient(135deg, rgba(110,168,254,0.9), rgba(139,92,246,0.9));
+      box-shadow: 0 10px 25px rgba(110,168,254,0.25);
+      font-size: 20px;
+    }
+
+    h1{
+      font-size: 20px;
+      margin: 0;
+      line-height: 1.2;
+      letter-spacing: 0.2px;
+    }
+    .sub{
+      margin: 2px 0 0 0;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .row{
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      margin-top: 16px;
+    }
+
+    input{
+      width: 100%;
+      padding: 14px 14px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.20);
+      color: var(--text);
+      outline: none;
+      font-size: 14px;
+    }
+    input::placeholder{ color: rgba(234,240,255,0.45); }
+    input:focus{
+      border-color: rgba(110,168,254,0.7);
+      box-shadow: 0 0 0 4px rgba(110,168,254,0.15);
+    }
+
+    button{
+      cursor: pointer;
+      border: 0;
+      padding: 14px 16px;
+      border-radius: 14px;
+      color: white;
+      font-weight: 600;
+      font-size: 14px;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      box-shadow: 0 12px 30px rgba(139,92,246,0.22);
+      transition: transform .08s ease, filter .08s ease;
+      white-space: nowrap;
+    }
+    button:hover{ filter: brightness(1.05); }
+    button:active{ transform: translateY(1px); }
+    button:disabled{
+      opacity: 0.6;
+      cursor: not-allowed;
+      filter: none;
+      transform: none;
+    }
+
+    .result{
+      margin-top: 16px;
+      border-radius: 14px;
+      border: 1px solid var(--border);
+      background: rgba(0,0,0,0.18);
+      padding: 14px;
+      display: none;
+      gap: 10px;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .result.show{ display: flex; }
+
+    .result a{
+      color: var(--text);
+      text-decoration: none;
+      word-break: break-all;
+    }
+    .result a:hover{ text-decoration: underline; }
+
+    .pill{
+      font-size: 12px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+      background: rgba(255,255,255,0.06);
+    }
+
+    .copy{
+      background: rgba(255,255,255,0.08);
+      border: 1px solid var(--border);
+      box-shadow: none;
+    }
+
+    .msg{
+      margin-top: 10px;
+      font-size: 13px;
+      color: var(--muted);
+      min-height: 18px;
+    }
+    .msg.ok{ color: rgba(34,197,94,0.95); }
+    .msg.bad{ color: rgba(239,68,68,0.95); }
+
+    .footer{
+      margin-top: 12px;
+      color: rgba(234,240,255,0.45);
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 520px){
+      .row{ grid-template-columns: 1fr; }
+      button{ width: 100%; }
+      .result{ flex-direction: column; align-items: stretch; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="header">
+        <div class="logo">🔗</div>
+        <div>
+          <h1>Simple Link Shortener</h1>
+          <p class="sub">Paste a URL, get a clean short link. (Local for now)</p>
+        </div>
+      </div>
+
+      <div class="row">
+        <input id="url" placeholder="https://example.com/very/long/link" />
+        <button id="shortenBtn" onclick="shorten()">Shorten</button>
+      </div>
+
+      <div id="result" class="result">
+        <div>
+          <div class="pill">Your short link</div>
+          <div style="margin-top:8px;">
+            <a id="shortLink" href="#" target="_blank" rel="noopener noreferrer"></a>
+          </div>
+        </div>
+        <button class="copy" onclick="copyLink()">Copy</button>
+      </div>
+
+      <div id="msg" class="msg"></div>
+    </div>
+
+    <div class="footer">Next step: deploy online so you can share links with anyone.</div>
+  </div>
+
+  <script>
+    const urlInput = document.getElementById("url");
+    const shortenBtn = document.getElementById("shortenBtn");
+    const resultBox = document.getElementById("result");
+    const shortLink = document.getElementById("shortLink");
+    const msg = document.getElementById("msg");
+
+    async function shorten() {
+      msg.className = "msg";
+      msg.textContent = "";
+      resultBox.classList.remove("show");
+
+      const url = urlInput.value.trim();
+      if (!url) {
+        msg.className = "msg bad";
+        msg.textContent = "Please enter a URL.";
+        return;
+      }
+
+      shortenBtn.disabled = true;
+      shortenBtn.textContent = "Working...";
+
+      try {
+        const res = await fetch("/api/shorten", {
+          method: "POST",
+          headers: {"Content-Type": "application/json"},
+          body: JSON.stringify({ url })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          msg.className = "msg bad";
+          msg.textContent = data.error || "Something went wrong.";
+          return;
+        }
+
+        shortLink.href = data.short_url;
+        shortLink.textContent = data.short_url;
+        resultBox.classList.add("show");
+
+        msg.className = "msg ok";
+        msg.textContent = "Done. You can copy the link.";
+      } catch (e) {
+        msg.className = "msg bad";
+        msg.textContent = "Network error. Is the server running?";
+      } finally {
+        shortenBtn.disabled = false;
+        shortenBtn.textContent = "Shorten";
+      }
+    }
+
+    async function copyLink() {
+      const text = shortLink.textContent;
+      try {
+        await navigator.clipboard.writeText(text);
+        msg.className = "msg ok";
+        msg.textContent = "Copied to clipboard ✅";
+      } catch {
+        msg.className = "msg bad";
+        msg.textContent = "Copy failed. Select and copy manually.";
+      }
+    }
+
+    urlInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") shorten();
+    });
+  </script>
+</body>
+</html>
